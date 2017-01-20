@@ -113,28 +113,40 @@
             return $post_id;
         }
         
-        /* Get the posted data and sanitize it for use as an HTML class. */
-        $new_meta_value = ( isset( $_POST['hushlamb-post-class'] ) ? sanitize_html_class( $_POST['hushlamb-post-class'] ) : '' );
+        $meta_keys = array(
+            'hushlamb_artist',
+            'hushlamb_release_date',
+            'hushlamb_catalog_number',
+            'hushlamb_traxxsource-link',
+            'hushlamb_beatport-link'
+        );
         
-        /* Get the meta key. */
-        $meta_key = 'hushlamb_post_class';
-        
-        /* Get the meta value of the custom field key. */
-        $meta_value = get_post_meta( $post_id, $meta_key, true );
-        
-        /* If a new meta value was added and there was no previous value, add it. */
-        if ( $new_meta_value && '' == $meta_value ) {
+        foreach( $meta_keys as $meta_key ) {
             
-            add_post_meta( $post_id, $meta_key, $new_meta_value, true );
-        
-        /* If the new meta value does not match the old value, update it. */
-        } elseif ( $new_meta_value && $new_meta_value != $meta_value ) {
+            $class_name = str_replace('_', '-', $meta_key);
             
-            update_post_meta( $post_id, $meta_key, $new_meta_value );
+            /* Get the posted data and sanitize it for use as an HTML class. */
+            $new_meta_value = ( isset( $_POST[ $class_name ] ) ? sanitize_html_class( $_POST[ $class_name ] ) : '' );
             
-        /* If there is no new meta value but an old value exists, delete it. */
-        } elseif ( '' == $new_meta_value && $meta_value ) {
+            /* Get the meta value of the custom field key. */
+            $meta_value = get_post_meta( $post_id, $meta_key, true );
             
-            delete_post_meta( $post_id, $meta_key, $meta_value );
+            /* If a new meta value was added and there was no previous value, add it. */
+            if ( $new_meta_value && '' == $meta_value ) {
+                
+                add_post_meta( $post_id, $meta_key, $new_meta_value, true );
+            
+            /* If the new meta value does not match the old value, update it. */
+            } elseif ( $new_meta_value && $new_meta_value != $meta_value ) {
+                
+                update_post_meta( $post_id, $meta_key, $new_meta_value );
+                
+            /* If there is no new meta value but an old value exists, delete it. */
+            } elseif ( '' == $new_meta_value && $meta_value ) {
+                
+                delete_post_meta( $post_id, $meta_key, $meta_value );
+            }  
         }
+        
+        
     }
